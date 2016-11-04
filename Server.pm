@@ -46,6 +46,16 @@ sub routes { @_ > 1 ? $_[0]{routes} = $_[1] : $_[0]{routes} }
 sub routes_list { @_ > 1 ? $_[0]{routes_list} = $_[1] : $_[0]{routes_list} }
 
 
+
+sub route {
+	my ($self, $route, @operations) = @_;
+	push @{$self->routes_list}, $route unless exists $self->routes->{$route};
+	push @{$self->routes->{$route}}, @operations;
+	return $self
+}
+
+
+
 sub start {
 	my ($self) = @_;
 
@@ -126,22 +136,7 @@ sub serve_connection {
 
 	$request{cookies} = { map split ('='), map split (/;\s*/), @{$request{headers}{cookie}} } if defined $request{headers}{cookie};
 
-
-	say Dumper \%request;	
-
-	# my %request;
-
-	# @request{qw/ raw header /} = ("$header\n", $header);
-
-
-
-	# while (<$socket>) {
-	# 	y/\r\n//d;
-	# 	last if $_ eq '';
-	# 	$request{raw} .= "$_\n";
-	# 	push @{$headers{lc $1}}, $2 if /\A([^:]+):\s+(.*)\Z/s;
-	# }
-
+	# say Dumper \%request;	
 	my $response = $self->process_request(\%request);
 
 	# say "sending response: [$response]";
@@ -153,7 +148,13 @@ sub serve_connection {
 sub process_request {
 	my ($self, $request) = @_;
 
-	my $response = $self->execute_request($request);
+	my $response;
+	eval {
+		$response = $self->execute_request($request);
+	};
+	if ($@) {
+		$response = { code => '500', body => "Error: $@" };
+	}
 
 	$response = { code => '500', body => 'Error: no response generated' } unless defined $response;
 	$response = $self->compile_response($response);
@@ -173,7 +174,7 @@ our %statuses = (
 	'500' => 'Internal Server Error',
 );
 
-sub compile_response ($$) {
+sub compile_response {
 	my ($self, $response) = @_;
 
 	# if a subroutine wants to return a completely custom response, do that
@@ -205,8 +206,26 @@ sub compile_response ($$) {
 
 sub execute_request {
 	my ($self, $request) = @_;
-	
-	return
+
+	my $response;
+
+	my @routes = grep $request->{path} =~ /\A$_\Z/s, @{$self->routes_list};
+	# say "matches routes: ", join ',', @routes;
+	if (@routes) {
+		foreach my $route (@routes) {
+			$request->{path} =~ /\A$route\Z/s;
+			my %route_args = %+;
+			$request->{route_args} = \%route_args;
+			foreach my $operation (@{$self->routes->{$route}}) {
+				$response = $operation->($request, $response);
+				$response = { code => '200', body => $response } if defined $response and 'HASH' ne ref $response;
+			}
+		}
+	} else {
+		$response = { code => '404', body => 'Error: not found' };
+	}
+
+	return $response
 }
 
 
