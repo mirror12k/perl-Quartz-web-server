@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 package Quartz::Silica;
 use strict;
 use warnings;
@@ -11,6 +12,11 @@ silica_database
 silica_session
 /;
 
+
+
+use Quartz::Server;
+use Quartz::Amethyst;
+use Quartz::Sand;
 
 
 sub generate_session_id {
@@ -52,4 +58,18 @@ sub silica_session {
 
 
 
-1;
+sub main {
+	my ($dirpath, $suffix) = @_;
+	die "amethyst file directory required" unless defined $dirpath;
+	$suffix //= '.am';
+
+	my $server = Quartz::Server->new;
+	$server->route('/.*' => silica_database, silica_session);
+	$server->route('/.*' => amethyst_directory(route => '/', directory => "$dirpath", suffix => "$suffix"), \&amethyst_compress);
+	$server->route('/.*(console_logging_route)?' => console_logging);
+	$server->start;
+
+}
+
+
+caller or main(@ARGV);

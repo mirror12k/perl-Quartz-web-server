@@ -118,7 +118,7 @@ sub amethyst_directory {
 	return sub {
 		my ($req, $res) = @_;
 		my $filepath = $req->{path} =~ s/\A$args{route}//sr;
-		$filepath = 'index' if $filepath eq '' or $filepath =~ /\/\Z/;
+		$filepath = "$filepath/index" if $filepath eq '' or $filepath =~ /\/\Z/;
 		$filepath =~ s#/\.?/#/#g;
 		$filepath =~ s#/[^/]+/\.\.## while $filepath =~ m#/[^/]+/\.\.#;
 		$filepath =~ s#(/|\A)\.\.##g;

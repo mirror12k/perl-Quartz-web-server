@@ -5,7 +5,7 @@
 			if (defined $request->{get_args}{user}) {
 				my $user = $request->{get_args}{user};
 				$request->{session}{current_user} = $user;
-				redirect("/user/");
+				redirect("index");
 			} else {
 		$>
 		<form method='get'>

@@ -1,7 +1,7 @@
 <$
 if (defined $request->{session}{current_user}) {
 	delete $request->{session}{current_user};
-	redirect('/user/');
+	redirect('index');
 } else {
 	echo "Error: you're not logged in!";
 }
