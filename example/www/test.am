@@ -1,0 +1,7 @@
+<!doctype html>
+<html>
+	<body>
+		<h1> <$ echo 'test directory!' $> </h1>
+		<p> <$ echo ' your ip is: ', join ':', @$request{'peer_ip', 'peer_port'} $> </p>
+	</body>
+</html>

@@ -1,0 +1,7 @@
+<html><body>
+hello world!<br />
+you are <$ echo join ':', @$request{'peer_ip', 'peer_port'} $><br />
+<$ while (my ($header, $value) = each %{$request->{headers}}) {
+	echo "$header -> @$value <br />";
+} $>
+</body></html>

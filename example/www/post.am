@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<body>
+		<$
+			use Digest::SHA 'sha256_hex';
+			if ($request->{method} eq 'POST') {
+				my ($user, $pass) = @{$request->{post_form}}{qw/ username password /};
+				$user //= '';
+				$pass //= '';
+				echo "welcome $user!";
+				echo "<br>";
+				echo "your password is ", sha256_hex ($pass);
+			} else {
+		$>
+		<form method='POST'>
+			<input type='text' name='username' />
+			<input type='password' name='password' />
+			<input type='submit' />
+		</form>
+		<$ } $>
+	</body>
+</html>

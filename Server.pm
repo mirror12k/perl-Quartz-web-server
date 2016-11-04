@@ -78,7 +78,7 @@ sub start {
 		my $socket_num = fileno $socket;
 		my $peer_ip = join '.', map ord, split '', $socket->peeraddr;
 		my $peer_port = $socket->peerport;
-		say "got connection fileno #$socket_num [$peer_ip:$peer_port]";
+		# say "got connection fileno #$socket_num [$peer_ip:$peer_port]";
 		$self->thread_pool->job($socket_num, $peer_ip, $peer_port);
 		$self->dispatched_queue->dequeue;
 	}
@@ -94,7 +94,6 @@ sub serve_connection {
 
 	my $data;
 	{ local $/ = "\r\n\r\n"; $data = <$socket>; }
-	# my $header = <$socket> =~ y/\r\n//dr;
 	# say "got: $data";
 
 	my %request;
@@ -149,6 +148,7 @@ sub process_request {
 	my ($self, $request) = @_;
 
 	my $response;
+	local $@;
 	eval {
 		$response = $self->execute_request($request);
 	};

@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body>
+	<$
+		while (my ($key, $val) = each %{$request->{route_args}}) {
+			echo "$key -> $val <br />";
+		}
+	$>
+</body>
+</html>
