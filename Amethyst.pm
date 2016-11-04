@@ -6,13 +6,15 @@ use base 'Exporter';
 
 use feature 'say';
 
+use Quartz::Server;
+use Quartz::Sand;
+use Sugar::IO::File;
+
 our @EXPORT = qw/
 amethyst_file
 amethyst_directory
 amethyst_compress
 /;
-
-use Sugar::IO::File;
 
 
 our $version_id = 'Amethyst/1.0';
@@ -132,4 +134,19 @@ sub amethyst_file {
 }
 
 
-1;
+
+sub main {
+	my ($dirpath, $suffix) = @_;
+	die "amethyst file directory required" unless defined $dirpath;
+	$suffix //= '.am';
+
+	my $server = Quartz::Server->new;
+	$server->route('/.*' => amethyst_directory(route => '/', directory => "$dirpath", suffix => "$suffix"), \&amethyst_compress);
+	$server->route('/.*(console_logging_route)?' => console_logging);
+	$server->start;
+
+}
+
+
+
+caller or main(@ARGV);
