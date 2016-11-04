@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+	<body>
+		<$
+			if (defined $request->{session}{current_user}) {
+				echo "Welcome $request->{session}{current_user}!";
+			} else {
+				redirect('/user/signup');
+			}
+		$>
+		<a href='logout'>logout</a>
+	</body>
+</html>

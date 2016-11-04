@@ -7,7 +7,7 @@ use feature 'say';
 
 use IO::Socket::INET;
 use threads;
-# use threads::shared;
+use threads::shared;
 use Thread::Queue;
 use Thread::Pool;
 
