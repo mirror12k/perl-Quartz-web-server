@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Quartz::Server;
+use Quartz::Sand;
 
 use Sugar::IO::File;
 use Sugar::IO::Dir;
@@ -48,6 +49,6 @@ $server->route('/.*', sub {
 });
 
 
-# $server->route('/.*(console_logging_route)?' => console_logging);
-# $server->route('/.*(route_gzip)?' => route_gzip);
+$server->route('/.*(console_logging_route)?' => console_logging);
+$server->route('/.*(route_gzip)?' => route_gzip);
 $server->start;
