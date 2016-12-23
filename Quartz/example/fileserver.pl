@@ -25,6 +25,7 @@ $server->route('/.*', sub {
 			if (defined $data) {
 				$res->{code} = 200;
 				$res->{body} = $data;
+				# $res->{headers}{'Content-Type'} = 'image/png';
 				$res->{headers}{'Content-Type'} = 'text/plain';
 			} else {
 				$res->{code} = 500;
